@@ -1,5 +1,6 @@
 import 'dart:convert';
-import 'dart:io';
+
+import 'package:flutter/services.dart';
 
 class Config {
   static Config _instance;
@@ -8,7 +9,8 @@ class Config {
   Config(this.sheetProjectId);
 
   static Future<Config> getInstance() async {
-    final config = await json.decode(await File("../../config.json").readAsString());
+    final config =
+        await json.decode(await rootBundle.loadString('assets/config.json'));
     if (_instance == null) _instance = Config(config.sheetProjectId);
     return _instance;
   }

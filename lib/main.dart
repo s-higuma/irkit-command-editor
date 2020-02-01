@@ -1,18 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:irkit_command_editor/view/home.dart';
 
-void main() => runApp(MyApp());
+void main() => runApp(IRKitCommandEditor());
 
-class MyApp extends StatelessWidget {
+class IRKitCommandEditor extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
+      title: 'irkit_command_editor',
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: MyHomePage(title: 'Flutter Demo Home Page'),
+      home: Home(title: 'IRKit Command Editor'),
     );
   }
 }
