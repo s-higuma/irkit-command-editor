@@ -11,7 +11,7 @@ class Config {
   static Future<Config> getInstance() async {
     final config =
         await json.decode(await rootBundle.loadString('assets/config.json'));
-    if (_instance == null) _instance = Config(config.sheetProjectId);
+    if (_instance == null) _instance = Config(config["sheetProjectId"]);
     return _instance;
   }
 }

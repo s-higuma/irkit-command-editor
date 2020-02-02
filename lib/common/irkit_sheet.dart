@@ -5,7 +5,8 @@ import 'package:irkit_command_editor/common/config.dart';
 import 'package:irkit_command_editor/common/irkit_command.dart';
 
 class IRKitSheet {
-  Sheet _sheet;
+  SpreadsheetsResourceApi _spreadSheet;
+  Config _config;
 
   IRKitSheet();
 
@@ -14,24 +15,23 @@ class IRKitSheet {
     final credentials = ServiceAccountCredentials.fromJson(
         await rootBundle.loadString('assets/credentials.json'));
     final scopes = const [SheetsApi.SpreadsheetsReadonlyScope];
-    final config = await Config.getInstance();
-    final spreadsheet =
-        await SheetsApi(await clientViaServiceAccount(credentials, scopes))
-            .spreadsheets
-            .get(config.sheetProjectId);
-    instance._sheet =
-        spreadsheet.sheets.firstWhere((x) => x.properties.title == "irkit");
+    instance._config = await Config.getInstance();
+    instance._spreadSheet =
+        SheetsApi(await clientViaServiceAccount(credentials, scopes))
+            .spreadsheets;
     return instance;
   }
 
+  Future<List<List<Object>>> getValues() async {
+    final vr =
+        await _spreadSheet.values.get(_config.sheetProjectId, "irkit!A2:G");
+    return vr.values;
+  }
+
   Future<List<IRKitCommand>> getCommands() async {
-    final rows = _sheet.data.first.rowData;
-    final commands = [];
-    rows.getRange(1, rows.length).map((row) {
-      final v =
-          row.values.map((cell) => cell.effectiveValue.toString()).toList();
-      commands.add(IRKitCommand(v[0], v[1], v.getRange(2, v.length)));
-    });
-    return commands;
+    final rows = await this.getValues();
+    return rows
+        .map((r) => IRKitCommand(r[0], r[1], r.skip(2).toList()))
+        .toList();
   }
 }

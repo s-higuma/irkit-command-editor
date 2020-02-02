@@ -11,8 +11,7 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
-  IRKitSheet _sheet;
-  List<IRKitCommand> _commands;
+  List<IRKitCommand> _commands = [];
 
   @override
   void initState() {
@@ -22,9 +21,8 @@ class _HomeState extends State<Home> {
 
   Future<void> _load() async {
     final sheet = await IRKitSheet.getInstance();
-    final commands = await _sheet.getCommands();
+    final commands = await sheet.getCommands();
     setState(() {
-      _sheet = sheet;
       _commands = commands;
     });
   }
@@ -37,6 +35,7 @@ class _HomeState extends State<Home> {
         ),
         body: ListView.builder(
           itemBuilder: (BuildContext c, int index) {
+            if (index >= _commands.length) return null;
             final command = _commands[index];
             return ListTile(
               title: Text(command.name),
