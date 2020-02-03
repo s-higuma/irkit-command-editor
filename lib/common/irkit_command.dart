@@ -1,7 +1,12 @@
 class IRKitCommand {
-  final String name;
-  final String message;
-  final List<Object> wakeWords;
+  final int id;
+  String name;
+  String message;
+  List<String> wakeWords;
 
-  IRKitCommand(this.name, this.message, this.wakeWords);
+  IRKitCommand(this.id, this.name, this.message, this.wakeWords);
+
+  List<Object> toList() {
+    return [this.id, this.name, this.message, ...this.wakeWords];
+  }
 }
