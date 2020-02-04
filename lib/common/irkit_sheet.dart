@@ -3,6 +3,7 @@ import 'package:googleapis/sheets/v4.dart';
 import 'package:googleapis_auth/auth_io.dart';
 import 'package:irkit_command_editor/common/config.dart';
 import 'package:irkit_command_editor/common/irkit_command.dart';
+import 'package:irkit_command_editor/util/util.dart';
 
 class IRKitSheet {
   SpreadsheetsResourceApi _spreadSheetApi;
@@ -40,13 +41,16 @@ class IRKitSheet {
   }
 
   Future<IRKitCommand> addCommand(IRKitCommand command) async {
-    final commands = await this.getAllCommands();
-    final id = commands.last.id + 1;
-    final column = command.wakeWords.length + 3;
-    final range = 'irkit!A$id:$column';
+    if (command.id == 0) {
+      final commands = await this.getAllCommands();
+      command.id = commands.last.id + 1;
+    }
+    final column = Util.getRange('A', 'Z')[command.wakeWords.length + 2];
+    final range = 'irkit!A${command.id + 1}:${column}1001';
     final valueRange = await getNewValueRange(range, [command.toList()]);
-    final res = await _spreadSheetApi.values
-        .update(valueRange, _config.sheetProjectId, range);
+    final res = await _spreadSheetApi.values.update(
+        valueRange, _config.sheetProjectId, range,
+        valueInputOption: 'RAW', includeValuesInResponse: true);
     return getCommandsFromValueRange(res.updatedData).first;
   }
 

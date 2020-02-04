@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:irkit_command_editor/common/irkit_command.dart';
 import 'package:irkit_command_editor/common/irkit_sheet.dart';
+import 'package:irkit_command_editor/main.dart';
 import 'package:irkit_command_editor/view/editor.dart';
 
 class Home extends StatefulWidget {
@@ -11,8 +12,25 @@ class Home extends StatefulWidget {
   _HomeState createState() => _HomeState();
 }
 
-class _HomeState extends State<Home> {
+class _HomeState extends State<Home> with RouteAware {
   List<IRKitCommand> _commands = [];
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    routeObserver.subscribe(this, ModalRoute.of(context));
+  }
+
+  @override
+  void dispose() {
+    routeObserver.unsubscribe(this);
+    super.dispose();
+  }
+
+  // 上の画面がpopされて、この画面に戻ったときに呼ばれます
+  void didPopNext() {
+    _load();
+  }
 
   @override
   void initState() {
@@ -43,7 +61,7 @@ class _HomeState extends State<Home> {
             return ListTile(
               title: Text(command.name),
               onTap: () async {
-                final result = await navigateEditor(context, command);
+                await navigateEditor(context, command);
               },
             );
           },
@@ -53,7 +71,7 @@ class _HomeState extends State<Home> {
         child: const Icon(Icons.add),
         onPressed: () async {
           final command = IRKitCommand(0, '新しいコマンド', '', []);
-          final result = await navigateEditor(context, command);
+          await navigateEditor(context, command);
         },
         tooltip: 'コマンドの追加',
       ),
@@ -64,7 +82,6 @@ class _HomeState extends State<Home> {
       BuildContext context, IRKitCommand command) async {
     return await Navigator.of(context).push(MaterialPageRoute<String>(
         builder: (context) => Editor(
-              title: widget.title,
               command: command,
             )));
   }

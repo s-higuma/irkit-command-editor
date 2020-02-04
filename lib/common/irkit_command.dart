@@ -1,5 +1,5 @@
 class IRKitCommand {
-  final int id;
+  int id;
   String name;
   String message;
   List<String> wakeWords;
@@ -8,5 +8,14 @@ class IRKitCommand {
 
   List<Object> toList() {
     return [this.id, this.name, this.message, ...this.wakeWords];
+  }
+
+  Map<String, String> toMap() {
+    return {
+      'id': this.id.toString(),
+      'name': this.name,
+      'message': this.message,
+      'wakeWords': this.wakeWords.join(','),
+    };
   }
 }
