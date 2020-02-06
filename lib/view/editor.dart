@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:irkit_command_editor/common/irkit_api_manager.dart';
 import 'package:irkit_command_editor/common/irkit_command.dart';
 import 'package:irkit_command_editor/common/irkit_sheet.dart';
-import 'package:irkit_command_editor/view/irkit_command_text_form_field_generator.dart';
+import 'package:irkit_command_editor/view/irkit_command_text_form_field.dart';
 
 class Editor extends StatefulWidget {
   final IRKitCommand command;
@@ -15,12 +16,14 @@ class Editor extends StatefulWidget {
 class _EditorState extends State<Editor> {
   IRKitSheet _sheet;
   IRKitCommand _command;
+  TextEditingController _messageInputController = TextEditingController();
 
   @override
   void initState() {
     super.initState();
     _command = widget.command;
     _load();
+    _messageInputController.text = _command.message;
   }
 
   Future<void> _load() async {
@@ -50,22 +53,40 @@ class _EditorState extends State<Editor> {
             padding: const EdgeInsets.all(16.0),
             child: Column(
               children: <Widget>[
-                IRKitCommandTextFormFieldGenerator(_command).generate('name',
-                    (text) async {
-                  _command.name = text;
-                  _command = await _sheet.addCommand(_command);
-                }),
-                IRKitCommandTextFormFieldGenerator(_command).generate('message',
-                    (text) async {
-                  _command.message = text;
-                  _command = await _sheet.addCommand(_command);
-                }),
-                IRKitCommandTextFormFieldGenerator(_command)
-                    .generate('wakeWords', (text) async {
-                  _command.wakeWords =
-                      text.split(',').map((x) => x.trim()).toList();
-                  _command = await _sheet.addCommand(_command);
-                }),
+                IRKitCommandTextFormField(
+                    field: 'name',
+                    initialValue: _command.name,
+                    onSaved: (inputText) async {
+                      _command.name = inputText;
+                      _command = await _sheet.addCommand(_command);
+                    }),
+                IRKitCommandTextFormField(
+                    field: 'wakeWords',
+                    initialValue: _command.wakeWords.join(','),
+                    onSaved: (inputText) async {
+                      _command.wakeWords =
+                          inputText.split(',').map((x) => x.trim()).toList();
+                      _command = await _sheet.addCommand(_command);
+                    }),
+                IRKitCommandTextFormField(
+                    field: 'message',
+                    controller: _messageInputController,
+                    onSaved: (inputText) async {
+                      _command.message = inputText;
+                      _command = await _sheet.addCommand(_command);
+                    }),
+                FlatButton(
+                  child: Text('IRKitから信号を取得'),
+                  onPressed: () async {
+                    String msg;
+                    try {
+                      msg = await IRKitApiManager().getMessage();
+                    } on Exception catch (e) {
+                      msg = e.toString();
+                    }
+                    _messageInputController.text = msg;
+                  },
+                )
               ],
             ),
           ),

@@ -19,9 +19,10 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  googleapis: any
-  googleapis_auth: any
+  googleapis: ^0.54.0
+  googleapis_auth: ^0.2.11+1
   path_provider: ^1.6.0
+  http: ^0.12.0+4
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
