@@ -91,7 +91,7 @@ class _EditorState extends State<Editor> {
                             '信号受信待機中...(リモコンをIRKitの方に向けて、登録したいボタンを押して下さい)';
                         msg = await IRKitApiManager().getMessage();
                       } on Exception catch (e) {
-                        msg = e.toString();
+                        msg = e.toString().replaceFirst('Exception: ', '');
                       }
                       _messageInputController.text = msg;
                     },
