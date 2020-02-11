@@ -12,8 +12,11 @@ class IRKitCommandEditor extends StatelessWidget {
     return MaterialApp(
       title: 'irkit_command_editor',
       theme: ThemeData(
-        primarySwatch: Colors.blue,
-      ),
+          primarySwatch: Colors.blue,
+          buttonColor: Colors.blue,
+          buttonTheme: const ButtonThemeData(
+            textTheme: ButtonTextTheme.primary,
+          )),
       home: Home(title: 'IRKit Command Editor'),
       navigatorObservers: <NavigatorObserver>[routeObserver],
     );
